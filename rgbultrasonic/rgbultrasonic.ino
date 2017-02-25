@@ -7,6 +7,10 @@
 #define GREEN 10 
 
 int lastMode = 0; 
+static final int OUT_OF_RANGE = 0, 
+                ONE_METER = 1,
+                HALF_METER = 2;
+
 
 void setup() {
   // put your setup code here, to run once:
@@ -34,17 +38,22 @@ void loop() {
   
   long duration = pulseIn(ECHO, HIGH); 
   long distance = duration*(0.034/2);
-  if (distance < 50) { 
+  if (distance < 100 && distance > 50) { 
     if (lastMode == 0) { 
       lastMode = 1; 
-      for (int i = 0; i < 200; i++) { 
-        rgb(50 + i,20,20); 
-        delay(5); 
-      }
+      
     } 
     else if (lastMode == 1) { 
       rgb(250,20,20); 
     }
+  } else if (distance < 50) {
+    if (lastMode == 1) { 
+      lastMode = 1; 
+      for (int i = 0; i < 100; i++) { 
+        rgb(50 + i,20,20); 
+        delay(5);
+      }
+    } 
   }
   else { 
     if (lastMode == 1) { 
@@ -137,6 +146,27 @@ void fadeGreen() {
     analogWrite(GREEN, r);
     delay(5);
   } 
+}
+
+void fadeColor(int startR, int startG, 
+            int startB, int endR, 
+            int endG, int endB, int pause) { 
+  double incR = (endR - startR)/255 ;
+  double incB = (endB - startB)/255 ;
+  double incG = (endG - startG)/255 ; 
+  for (int i = 0; i < 255; i++) { 
+        double newR = startR + (i * incR); 
+        double newB = startB + (i * incB); 
+        double newG = startG + (i * incG); 
+        rgbDouble(newR, newB, newG);
+        delay(pause);
+  }
+}
+
+void rgbDouble(double r, double g, double b) { 
+  analogWrite(RED, r); 
+  analogWrite(GREEN, g); 
+  analogWrite(BLUE, b); 
 }
 
 void rgb(int r, int g, int b) { 
