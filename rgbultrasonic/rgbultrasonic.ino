@@ -7,7 +7,7 @@
 #define GREEN 10 
 
 int lastMode = 0; 
-static final int OUT_OF_RANGE = 0, 
+static int OUT_OF_RANGE = 0, 
                 ONE_METER = 1,
                 HALF_METER = 2;
 
@@ -58,7 +58,7 @@ void loop() {
     if (lastMode == HALF_METER) { 
        lastMode = OUT_OF_RANGE;
        fadeColor(250, 250, 250, 0, 0, 0, 5);
-    } else if (lastMOde == ONE_METER) {
+    } else if (lastMode == ONE_METER) {
        lastMode = OUT_OF_RANGE;
        fadeColor(125, 125, 125, 0, 0, 0, 5);
     }
@@ -149,10 +149,10 @@ void fadeGreen() {
 void fadeColor(int startR, int startG, 
             int startB, int endR, 
             int endG, int endB, int pause) { 
-  double incR = (endR - startR)/255.0 ;
-  double incB = (endB - startB)/255.0 ;
-  double incG = (endG - startG)/255.0 ; 
-  for (int i = 0; i < 255; i++) {
+  double incR = (double) (endR - startR)/ (double) 255 ;
+  double incB = (double) (endB - startB)/ (double) 255 ;
+  double incG = (double) (endG - startG)/ (double) 255 ; 
+  for (int i = 0; i < 255; i++) { 
         int newR = startR + (i * incR); 
         int newB = startB + (i * incB); 
         int newG = startG + (i * incG); 
