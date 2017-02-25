@@ -37,31 +37,31 @@ void loop() {
   digitalWrite(TRIG, LOW); 
   
   long duration = pulseIn(ECHO, HIGH); 
-  long distance = duration*(0.034/2);
+  long distance = durationToDistance(duration);
   if (distance < 100 && distance > 50) { 
-    if (lastMode == 0) { 
-      lastMode = 1; 
-      fadeColor(0,0,0,250,20,20,5); 
+    if (lastMode == OUT_OF_RANGE) { 
+      lastMode = ONE_METER = 1; 
+      fadeColor(0, 0, 0, 125, 125, 125, 5);
     } 
-    else if (lastMode == 1) { 
-      rgb(250,20,20); 
+    else if (lastMode == ONE_METER) { 
+      rgb(125,125,125);
     }
   } else if (distance < 50) {
-    if (lastMode == 1) { 
-      lastMode = 1; 
-      for (int i = 0; i < 100; i++) { 
-        rgb(50 + i,20,20); 
-        delay(5);
-      }
-    } 
+    if (lastMode == ONE_METER) { 
+      lastMode = HALF_METER; 
+      fadeColor(125, 125, 125, 250, 250, 250, 5);
+    }
+    else if (lastMode == HALF_METER) {
+      rgb(250, 250, 250);
+    }
   }
   else { 
-    if (lastMode == 1) { 
-       lastMode = 0; 
-       for (int i = 200; i >= 0; i--) { 
-        rgb(50 + i,20,20); 
-        delay(3); 
-      } 
+    if (lastMode == HALF_METER) { 
+       lastMode = OUT_OF_RANGE;
+       fadeColor(250, 250, 250, 0, 0, 0, 5);
+    } else if (lastMode == ONE_METER) {
+       lastMode = OUT_OF_RANGE;
+       fadeColor(125, 125, 125, 0, 0, 0, 5);
     }
   }
   
@@ -69,9 +69,8 @@ void loop() {
   Serial.println(distance); 
 }
 
-void discreteDistance(int distance){ 
-
-  
+double durationToDistance(int duration){ 
+  return duration*(0.034/2);
 }
 
 //void logDistance(int distance) { 
@@ -151,9 +150,9 @@ void fadeGreen() {
 void fadeColor(int startR, int startG, 
             int startB, int endR, 
             int endG, int endB, int pause) { 
-  double incR = (endR - startR)/255 ;
-  double incB = (endB - startB)/255 ;
-  double incG = (endG - startG)/255 ; 
+  double incR = (double) (endR - startR)/ (double) 255 ;
+  double incB = (double) (endB - startB)/ (double) 255 ;
+  double incG = (double) (endG - startG)/ (double) 255 ; 
   for (int i = 0; i < 255; i++) { 
         int newR = startR + (i * incR); 
         int newB = startB + (i * incB); 
@@ -161,12 +160,6 @@ void fadeColor(int startR, int startG,
         rgb(newR, newB, newG);
         delay(pause);
   }
-}
-
-void rgbDouble(double r, double g, double b) { 
-  analogWrite(RED, r); 
-  analogWrite(GREEN, g); 
-  analogWrite(BLUE, b); 
 }
 
 void rgb(int r, int g, int b) { 
