@@ -54,8 +54,7 @@ void loop() {
     else if (lastMode == HALF_METER) {
       rgb(250, 250, 250);
     }
-  }
-  else { 
+  } else { 
     if (lastMode == HALF_METER) { 
        lastMode = OUT_OF_RANGE;
        fadeColor(250, 250, 250, 0, 0, 0, 5);
@@ -150,10 +149,10 @@ void fadeGreen() {
 void fadeColor(int startR, int startG, 
             int startB, int endR, 
             int endG, int endB, int pause) { 
-  double incR = (endR - startR)/255 ;
-  double incB = (endB - startB)/255 ;
-  double incG = (endG - startG)/255 ; 
-  for (int i = 0; i < 255; i++) { 
+  double incR = (endR - startR)/255.0 ;
+  double incB = (endB - startB)/255.0 ;
+  double incG = (endG - startG)/255.0 ; 
+  for (int i = 0; i < 255; i++) {
         int newR = startR + (i * incR); 
         int newB = startB + (i * incB); 
         int newG = startG + (i * incG); 
