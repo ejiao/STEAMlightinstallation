@@ -7,7 +7,7 @@
 #define GREEN 10 
 
 int lastMode = 0; 
-static final int OUT_OF_RANGE = 0, 
+static int OUT_OF_RANGE = 0, 
                 ONE_METER = 1,
                 HALF_METER = 2;
 
@@ -41,7 +41,7 @@ void loop() {
   if (distance < 100 && distance > 50) { 
     if (lastMode == 0) { 
       lastMode = 1; 
-      
+      fadeColor(0,0,0,250,20,20,5); 
     } 
     else if (lastMode == 1) { 
       rgb(250,20,20); 
@@ -155,10 +155,10 @@ void fadeColor(int startR, int startG,
   double incB = (endB - startB)/255 ;
   double incG = (endG - startG)/255 ; 
   for (int i = 0; i < 255; i++) { 
-        double newR = startR + (i * incR); 
-        double newB = startB + (i * incB); 
-        double newG = startG + (i * incG); 
-        rgbDouble(newR, newB, newG);
+        int newR = startR + (i * incR); 
+        int newB = startB + (i * incB); 
+        int newG = startG + (i * incG); 
+        rgb(newR, newB, newG);
         delay(pause);
   }
 }
