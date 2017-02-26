@@ -24,61 +24,71 @@ void setup() {
 
   Serial.begin(9600);
 
-  rgb(50, 20, 20);
+  rgb(0, 0, 50);
 
 }
 
 void loop() {
-  digitalWrite(TRIG, LOW);
-  delayMicroseconds(20);
+  long minDuration = 2000000.; 
+  long trials = 5.; 
+  for (int i = 0; i < trials; i++) {
+    digitalWrite(TRIG, LOW);
+    delayMicroseconds(20);
+    
+    digitalWrite(TRIG, HIGH);
+    delayMicroseconds(100);
+    digitalWrite(TRIG, LOW);
 
-  digitalWrite(TRIG, HIGH);
-  delayMicroseconds(100);
-  digitalWrite(TRIG, LOW);
-
-  long duration = pulseIn(ECHO, HIGH);
-  long distance = durationToDistance(duration);
-  if (distance < 100 && distance >= 50) {
-    if (lastMode == OUT_OF_RANGE) {
-      lastMode = ONE_METER;
-      fadeColor(0, 0, 0, 125, 125, 125, 5);
-    }
-    else if (lastMode == HALF_METER) {
-      lastMode = ONE_METER;
-      fadeColor(250, 250, 250, 125, 125, 125, 5);
-    }
-    else if (lastMode == ONE_METER) {
-      rgb(125, 125, 125);
-    }
-  } else if (distance < 50) {
-    if (lastMode == ONE_METER) {
-      lastMode = HALF_METER;
-      fadeColor(125, 125, 125, 250, 250, 250, 5);
-    }
-    else if (lastMode == OUT_OF_RANGE) {
-      lastMode = HALF_METER;
-      fadeColor(0, 0, 0, 250, 250, 250, 5);
-    }
-    else if (lastMode == HALF_METER) {
-      rgb(250, 250, 250);
-    }
-  } else {
-    if (lastMode == HALF_METER) {
-      lastMode = OUT_OF_RANGE;
-      fadeColor(250, 250, 250, 0, 0, 0, 5);
-    } else if (lastMode == ONE_METER) {
-      lastMode = OUT_OF_RANGE;
-      fadeColor(125, 125, 125, 0, 0, 0, 5);
-    } else if (lastMode == OUT_OF_RANGE) {
-      rgb(0, 0, 0);
+    long tempDuration = pulseIn(ECHO, HIGH);
+    if (tempDuration < minDuration) {
+      minDuration = tempDuration;
     }
   }
 
-  Serial.print("Distance: ");
-  Serial.println(distance);
+  long distance = durationToDistance(minDuration);
+
+  if (distance < 150 && distance >= 75) {
+    if (lastMode == ONE_METER) {
+      //do nothing
+    }
+    else if (lastMode == OUT_OF_RANGE) {
+      lastMode = ONE_METER;
+      fadeColor(0, 0, 50, 50, 0, 50, 3);
+    }
+    else if (lastMode == HALF_METER) {
+      lastMode = ONE_METER;
+      fadeColor(250, 0, 50, 50, 0, 50, 3);
+    }
+  } else if (distance < 75) {
+    if (lastMode == HALF_METER) {
+      //do nothing
+    }
+    else if (lastMode == ONE_METER) {
+      lastMode = HALF_METER;
+      fadeColor(50, 0, 50, 250, 0, 50, 3);
+    }
+    else if (lastMode == OUT_OF_RANGE) {
+      lastMode = HALF_METER;
+      fadeColor(0, 0, 50, 250, 0, 50, 3);
+    }
+  } else {
+    if (lastMode == OUT_OF_RANGE) {
+      //do nothing
+    }
+    else if (lastMode == HALF_METER) {
+      lastMode = OUT_OF_RANGE;
+      fadeColor(250, 0, 50, 0, 0, 50, 3);
+    } else if (lastMode == ONE_METER) {
+      lastMode = OUT_OF_RANGE;
+      fadeColor(50, 0, 50, 0, 0, 50, 3);
+    }
+  }
+ 
+//  Serial.print("Distance: ");
+//  Serial.println(distance);
 }
 
-double durationToDistance(int duration) {
+long durationToDistance(long duration) {
   return duration * (0.034 / 2);
 }
 
@@ -166,7 +176,7 @@ void fadeColor(int startR, int startG,
     int newR = startR + (i * incR);
     int newB = startB + (i * incB);
     int newG = startG + (i * incG);
-    rgb(newR, newB, newG);
+    rgb(newR, newG, newB);
     delay(pause);
   }
 }
