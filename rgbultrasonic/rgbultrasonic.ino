@@ -1,10 +1,13 @@
 
 #define TRIG 3
 #define ECHO 2
+#define AUDIO 4
+#define AUDIO_ANALOG A0
 
 #define RED 5
-#define BLUE 6
-#define GREEN 10
+#define BLUE 9
+#define GREEN 12
+int lastState;
 
 int lastMode = 0;
 static int OUT_OF_RANGE = 0,
@@ -22,70 +25,95 @@ void setup() {
   pinMode(TRIG, OUTPUT);
   pinMode(ECHO, INPUT);
 
+  // microphone
+  pinMode(AUDIO, INPUT);
+
   Serial.begin(9600);
 
   rgb(0, 0, 50);
-
+  
 }
 
 void loop() {
-  long minDuration = 2000000.; 
-  long trials = 5.; 
+  //  long minDuration = 2000000.;
+  //  long trials = 5.;
+  //  for (int i = 0; i < trials; i++) {
+  //    digitalWrite(TRIG, LOW);
+  //    delayMicroseconds(20);
+  //
+  //    digitalWrite(TRIG, HIGH);
+  //    delayMicroseconds(100);
+  //    digitalWrite(TRIG, LOW);
+  //
+  //    long tempDuration = pulseIn(ECHO, HIGH);
+  //    if (tempDuration < minDuration) {
+  //      minDuration = tempDuration;
+  //    }
+  //  }
+  //
+  //  long distance = durationToDistance(minDuration);
+  //
+  //  if (distance < 150 && distance >= 75) {
+  //    if (lastMode == ONE_METER) {
+  //      //do nothing
+  //    }
+  //    else if (lastMode == OUT_OF_RANGE) {
+  //      lastMode = ONE_METER;
+  //      fadeColor(0, 0, 50, 50, 0, 50, 3);
+  //    }
+  //    else if (lastMode == HALF_METER) {
+  //      lastMode = ONE_METER;
+  //      fadeColor(250, 0, 50, 50, 0, 50, 3);
+  //    }
+  //  } else if (distance < 75) {
+  //    if (lastMode == HALF_METER) {
+  //      //do nothing
+  //    }
+  //    else if (lastMode == ONE_METER) {
+  //      lastMode = HALF_METER;
+  //      fadeColor(50, 0, 50, 250, 0, 50, 3);
+  //    }
+  //    else if (lastMode == OUT_OF_RANGE) {
+  //      lastMode = HALF_METER;
+  //      fadeColor(0, 0, 50, 250, 0, 50, 3);
+  //    }
+  //  } else {
+  //    if (lastMode == OUT_OF_RANGE) {
+  //      //do nothing
+  //    }
+  //    else if (lastMode == HALF_METER) {
+  //      lastMode = OUT_OF_RANGE;
+  //      fadeColor(250, 0, 50, 0, 0, 50, 3);
+  //    } else if (lastMode == ONE_METER) {
+  //      lastMode = OUT_OF_RANGE;
+  //      fadeColor(50, 0, 50, 0, 0, 50, 3);
+  //    }
+  //  }
+
+  long maxVol = 2000000.;
+  long value;
+  long trials = 50.;
   for (int i = 0; i < trials; i++) {
-    digitalWrite(TRIG, LOW);
-    delayMicroseconds(20);
-    
-    digitalWrite(TRIG, HIGH);
-    delayMicroseconds(100);
-    digitalWrite(TRIG, LOW);
-
-    long tempDuration = pulseIn(ECHO, HIGH);
-    if (tempDuration < minDuration) {
-      minDuration = tempDuration;
+    value = analogRead(AUDIO_ANALOG);
+    if (value < maxVol) {
+      maxVol = value;
+    }
+  }
+  
+  if (maxVol < 500) {
+    if (lastState == 0) {
+       fadeColor(0, 0, 50, 250, 0, 50, 3);
+       lastState = 1;
+    } else {
+       fadeColor(250, 0, 50, 0, 0, 50, 4);
+       lastState = 0;
     }
   }
 
-  long distance = durationToDistance(minDuration);
+  Serial.println(lastState);
 
-  if (distance < 150 && distance >= 75) {
-    if (lastMode == ONE_METER) {
-      //do nothing
-    }
-    else if (lastMode == OUT_OF_RANGE) {
-      lastMode = ONE_METER;
-      fadeColor(0, 0, 50, 50, 0, 50, 3);
-    }
-    else if (lastMode == HALF_METER) {
-      lastMode = ONE_METER;
-      fadeColor(250, 0, 50, 50, 0, 50, 3);
-    }
-  } else if (distance < 75) {
-    if (lastMode == HALF_METER) {
-      //do nothing
-    }
-    else if (lastMode == ONE_METER) {
-      lastMode = HALF_METER;
-      fadeColor(50, 0, 50, 250, 0, 50, 3);
-    }
-    else if (lastMode == OUT_OF_RANGE) {
-      lastMode = HALF_METER;
-      fadeColor(0, 0, 50, 250, 0, 50, 3);
-    }
-  } else {
-    if (lastMode == OUT_OF_RANGE) {
-      //do nothing
-    }
-    else if (lastMode == HALF_METER) {
-      lastMode = OUT_OF_RANGE;
-      fadeColor(250, 0, 50, 0, 0, 50, 3);
-    } else if (lastMode == ONE_METER) {
-      lastMode = OUT_OF_RANGE;
-      fadeColor(50, 0, 50, 0, 0, 50, 3);
-    }
-  }
- 
-//  Serial.print("Distance: ");
-//  Serial.println(distance);
+  //  Serial.print("Distance: ");
+  //  Serial.println(distance);
 }
 
 long durationToDistance(long duration) {
