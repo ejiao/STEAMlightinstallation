@@ -1,9 +1,7 @@
-#include <NewPing.h>
-
 #define ECHO1 22
 #define TRIG1 24
-#define ECHO2 44
-#define TRIG2 46
+#define ECHO2 34
+#define TRIG2 36
 
 #define RED1 3
 #define BLUE1 4
@@ -33,11 +31,8 @@ void setup() {
   pinMode(GREEN2, OUTPUT);
 
   // ultrasonic
-  unsigned int cm[2]; // Store ping distances.
-  NewPing sonar(TRIG1, ECHO1, 150)
-  NewPing sonar(TRIG2, ECHO2, 150)
-
-  // ultrasonic
+  pinMode(TRIG1, OUTPUT); 
+  pinMode(ECHO1, INPUT); 
   pinMode(TRIG2, OUTPUT);
   pinMode(ECHO2, INPUT);
 
@@ -54,10 +49,11 @@ void loop() {
   loopOnStrip(RED2, GREEN2, BLUE2, TRIG2, ECHO2, lastMode2, STRIP_TWO);
   
 }
+ 
 
 void loopOnStrip(int pinRed, int pinGreen, int pinBlue, int pinTrig, int pinEcho, int lastMode,int whichStrip) {
   long minDuration = 2000000.;
-  long trials = 5.;
+  int trials = 5;
   for (int i = 0; i < trials; i++) {
     digitalWrite(pinTrig, LOW);
     delayMicroseconds(20);
@@ -67,6 +63,11 @@ void loopOnStrip(int pinRed, int pinGreen, int pinBlue, int pinTrig, int pinEcho
     digitalWrite(pinTrig, LOW);
 
     long tempDuration = pulseIn(pinEcho, HIGH);
+
+    Serial.print("Strip "); 
+    Serial.print(whichStrip); 
+    Serial.print(" distance = "); 
+    Serial.println(durationToDistance(tempDuration)); 
     if (tempDuration < minDuration) {
       minDuration = tempDuration;
     }
@@ -82,7 +83,7 @@ void loopOnStrip(int pinRed, int pinGreen, int pinBlue, int pinTrig, int pinEcho
     Serial.println(distance);
   }
 
-  if (distance < 150 && distance >= 100) {
+  if (distance < 50 && distance >= 25) {
     if (lastMode == ONE_METER) {
       //do nothing
     }
@@ -102,7 +103,7 @@ void loopOnStrip(int pinRed, int pinGreen, int pinBlue, int pinTrig, int pinEcho
       }
       fadeColor(250, 0, 50, 50, 0, 50, 3, pinRed, pinGreen, pinBlue);
     }
-  } else if (distance < 100) {
+  } else if (distance < 25) {
     if (lastMode == HALF_METER) {
       //do nothing
     }
@@ -143,12 +144,10 @@ void loopOnStrip(int pinRed, int pinGreen, int pinBlue, int pinTrig, int pinEcho
     }
   }
 
-  //  Serial.print("Distance: ");
-  //  Serial.println(distance);
 }
 
 long durationToDistance(long duration) {
-  return duration * (0.034 / 2);
+  return duration * (0.0344 / 2);
 }
 
 //void logDistance(int distance) {
