@@ -86,7 +86,7 @@ void setup() {
 }
 
 void loop() {
-  if (count == 80) {
+  if (count == 10) {
     // get distances from each ultrasonic sensor
     //    distance1 = ultrasonic(TRIG1, ECHO1);
     distance2 = ultrasonic(TRIG2, ECHO2);
