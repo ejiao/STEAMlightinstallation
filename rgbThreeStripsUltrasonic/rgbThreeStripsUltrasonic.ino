@@ -1,25 +1,26 @@
-#define ECHO1 40
-#define TRIG1 42
+#define ECHO1 23
+#define TRIG1 22
 
-#define ECHO2 22
+#define ECHO2 25
 #define TRIG2 24
 
-#define ECHO3 30
-#define TRIG3 32
+#define ECHO3 27
+#define TRIG3 26
 
-#define AUDIO 18
+#define AUDIO 20
 
-#define RED1 3
-#define GREEN1 2
-#define BLUE1 4
+#define GREEN1 3
+#define RED1 4
+#define BLUE1 5
 
-#define RED2 7
-#define BLUE2 6
-#define GREEN2 5
+#define GREEN2 6
+#define RED2 7 
+#define BLUE2 8
 
-#define RED3 9
-#define BLUE3 10
-#define GREEN3 8
+#define GREEN3 9
+#define RED3 10
+#define BLUE3 11
+
 
 static int FAR = 0,
            MEDIUM = 1,
@@ -88,11 +89,11 @@ void setup() {
 void loop() {
   if (count == 10) {
     // get distances from each ultrasonic sensor
-    //    distance1 = ultrasonic(TRIG1, ECHO1);
+    distance1 = ultrasonic(TRIG1, ECHO1);
     distance2 = ultrasonic(TRIG2, ECHO2);
     distance3 = ultrasonic(TRIG3, ECHO3);
-    //    Serial.print("Strip one distance: ");
-    //    Serial.println(distance1);
+    Serial.print("Strip one distance: ");
+    Serial.println(distance1);
     Serial.print("Strip two distance: ");
     Serial.println(distance2);
     Serial.print("Strip three distance: ");

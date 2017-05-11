@@ -1,7 +1,7 @@
-#define ECHO1 22
-#define TRIG1 24
-#define ECHO2 34
-#define TRIG2 36
+#define ECHO1 23
+#define TRIG1 22
+#define ECHO2 25
+#define TRIG2 24
 
 #define RED1 3
 #define BLUE1 4
