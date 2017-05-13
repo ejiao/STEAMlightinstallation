@@ -1,6 +1,6 @@
 /* May 11, 2017 
- * This is the final code for strips that contain individual 
- * R, G, and B lights
+ * This is the final code for strips that require a reduced light output 
+ * (Used specifically for Mark II, which has the highest light density) 
  */
 
 #define ECHO1 23
@@ -14,17 +14,17 @@
 
 #define AUDIO 20
 
-#define GREEN1 3
 #define RED1 4
 #define BLUE1 5
+#define GREEN1 3
 
+#define RED2 8
+#define BLUE2 7
 #define GREEN2 6
-#define RED2 7 
-#define BLUE2 8
 
-#define GREEN3 9
 #define RED3 10
 #define BLUE3 11
+#define GREEN3 9
 
 
 static int FAR = 0,
@@ -34,13 +34,16 @@ static int FAR = 0,
            STRIP_TWO = 2,
            STRIP_THREE = 3,
            R = 0, G = 1, B = 2,
-           MAX_BRIGHTNESS = 120,
-           MED_BRIGHTNESS = 80,
-           IDLE_BRIGHTNESS = 30,
-           FRAME_RATE = 10;
+           MAX_BRIGHTNESS = 50, // reduced from 255
+           MED_BRIGHTNESS = 20,
+           IDLE_BRIGHTNESS = 10,
+           LOW_BRIGHTNESS = 3, 
+           FRAME_RATE = 30; //smaller is faster 
 
 int strip1[3], strip2[3], strip3[3];
-int count = 0;
+int count = 0; // timer 
+int breathing_down = false; // exhale mode (decreasing)
+int breathing_up = true; // inhale mode (increasing) 
 long distance1 = 151, distance2 = 151, distance3 = 151;
 unsigned long lastInterrupt;
 
@@ -112,21 +115,47 @@ void loop() {
   rgb(strip1, RED1, GREEN1, BLUE1);
   rgb(strip2, RED2, GREEN2, BLUE2);
   rgb(strip3, RED3, GREEN3, BLUE3);
-
-  //  Serial.print("Strip 3 Red: ");
-  //  Serial.println(strip3[R]);
-
+  
   delay(FRAME_RATE);
 
   count++;
 
 }
 
+
 // updates all strip states
+// depending on distance (red) and breathing (blue) 
 void updateStripStates(int d1, int d2, int d3) {
   updateParticularStrip(d1, R, strip1, 3);
+  updateBreath(B, strip1, 1); 
   updateParticularStrip(d2, R, strip2, 3);
+  updateBreath(B, strip2, 1); 
   updateParticularStrip(d3, R, strip3, 3);
+  updateBreath(B, strip3, 1); 
+}
+
+// fades a color between idle and low brightness 
+void updateBreath(int color, int strip[], float inc) {
+  if (count % 2 == 0) { // only update every other loop (slows down breath)
+    if(breathing_up) { 
+      if (strip[color] == IDLE_BRIGHTNESS){ 
+        breathing_up = false; 
+        breathing_down = true; 
+      }
+      else { 
+        strip[color] += inc;
+      } 
+    }
+    if(breathing_down) { 
+      if (strip[color] == LOW_BRIGHTNESS){ 
+        breathing_up = true; 
+        breathing_down = false; 
+      }
+      else { 
+        strip[color] -= inc; 
+      }
+    }
+  }
 }
 
 // updates specific strip state
@@ -198,7 +227,7 @@ long ultrasonic(int trigPin, int echoPin) {
 
 // does the audio stuff
 void readAudio() {
-  if (millis() - lastInterrupt > 10) {
+  if (millis() - lastInterrupt > 100) {
     for (int i = 0; i < MAX_BRIGHTNESS; i++) {
       analogWrite(GREEN1, i);
       analogWrite(GREEN2, i);

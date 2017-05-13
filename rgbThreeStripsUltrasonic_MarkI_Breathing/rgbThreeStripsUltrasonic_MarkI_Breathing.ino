@@ -1,31 +1,25 @@
-/* May 11, 2017 
- * This is the final code for strips that contain individual 
- * R, G, and B lights
- */
+#define ECHO1 40
+#define TRIG1 42
 
-#define ECHO1 23
-#define TRIG1 22
-
-#define ECHO2 25
+#define ECHO2 22
 #define TRIG2 24
 
-#define ECHO3 27
-#define TRIG3 26
+#define ECHO3 30
+#define TRIG3 32
 
-#define AUDIO 20
+#define AUDIO 18
 
-#define GREEN1 3
-#define RED1 4
-#define BLUE1 5
+#define RED1 3
+#define GREEN1 2
+#define BLUE1 4
 
-#define GREEN2 6
-#define RED2 7 
-#define BLUE2 8
+#define RED2 7
+#define BLUE2 6
+#define GREEN2 5
 
-#define GREEN3 9
-#define RED3 10
-#define BLUE3 11
-
+#define RED3 9
+#define BLUE3 10
+#define GREEN3 8
 
 static int FAR = 0,
            MEDIUM = 1,
@@ -34,13 +28,16 @@ static int FAR = 0,
            STRIP_TWO = 2,
            STRIP_THREE = 3,
            R = 0, G = 1, B = 2,
-           MAX_BRIGHTNESS = 120,
-           MED_BRIGHTNESS = 80,
-           IDLE_BRIGHTNESS = 30,
+           MAX_BRIGHTNESS = 255,
+           MED_BRIGHTNESS = 180,
+           IDLE_BRIGHTNESS = 120,
+           LOW_BRIGHTNESS = 50, 
            FRAME_RATE = 10;
-
+           
 int strip1[3], strip2[3], strip3[3];
-int count = 0;
+int count = 0; // timer 
+int breathing_down = false; // exhale mode (decreasing)
+int breathing_up = true; // inhale mode (increasing) 
 long distance1 = 151, distance2 = 151, distance3 = 151;
 unsigned long lastInterrupt;
 
@@ -94,11 +91,11 @@ void setup() {
 void loop() {
   if (count == 10) {
     // get distances from each ultrasonic sensor
-    distance1 = ultrasonic(TRIG1, ECHO1);
+    //distance1 = ultrasonic(TRIG1, ECHO1);
     distance2 = ultrasonic(TRIG2, ECHO2);
     distance3 = ultrasonic(TRIG3, ECHO3);
-    Serial.print("Strip one distance: ");
-    Serial.println(distance1);
+    //Serial.print("Strip one distance: ");
+    //Serial.println(distance1);
     Serial.print("Strip two distance: ");
     Serial.println(distance2);
     Serial.print("Strip three distance: ");
@@ -123,17 +120,44 @@ void loop() {
 }
 
 // updates all strip states
+// depending on distance (red) and breathing (blue) 
 void updateStripStates(int d1, int d2, int d3) {
   updateParticularStrip(d1, R, strip1, 3);
+  updateBreath(B, strip1, 1); 
   updateParticularStrip(d2, R, strip2, 3);
+  updateBreath(B, strip2, 1); 
   updateParticularStrip(d3, R, strip3, 3);
+  updateBreath(B, strip3, 1); 
+}
+
+// fades a color between idle and low brightness 
+void updateBreath(int color, int strip[], float inc) {
+  if (count % 2 == 0) { // only update every other loop (slows down breath)
+    if(breathing_up) { 
+      if (strip[color] == IDLE_BRIGHTNESS){ 
+        breathing_up = false; 
+        breathing_down = true; 
+      }
+      else { 
+        strip[color] += inc;
+      } 
+    }
+    if(breathing_down) { 
+      if (strip[color] == LOW_BRIGHTNESS){ 
+        breathing_up = true; 
+        breathing_down = false; 
+      }
+      else { 
+        strip[color] -= inc; 
+      }
+    }
+  }
 }
 
 // updates specific strip state
 void updateParticularStrip(int d, int color, int strip[], int inc) {
   if (chunkDistance(d) == FAR) {
     if (strip[color] > 0) {
-      //      Serial.println("DECREMENT THIS SHIT");
       strip[color] -= inc;
     }
     else {
@@ -203,13 +227,13 @@ void readAudio() {
       analogWrite(GREEN1, i);
       analogWrite(GREEN2, i);
       analogWrite(GREEN3, i);
-      delayMicroseconds(1000);
+      delayMicroseconds(250);
     }
     for (int i = MAX_BRIGHTNESS; i >= 0; i--) {
       analogWrite(GREEN1, i);
       analogWrite(GREEN2, i);
       analogWrite(GREEN3, i);
-      delayMicroseconds(10000);
+      delayMicroseconds(2500);
     } 
     lastInterrupt = millis();
   }

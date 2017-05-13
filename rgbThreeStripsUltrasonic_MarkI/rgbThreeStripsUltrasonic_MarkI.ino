@@ -1,31 +1,25 @@
-/* May 11, 2017 
- * This is the final code for strips that contain individual 
- * R, G, and B lights
- */
+#define ECHO1 40
+#define TRIG1 42
 
-#define ECHO1 23
-#define TRIG1 22
-
-#define ECHO2 25
+#define ECHO2 22
 #define TRIG2 24
 
-#define ECHO3 27
-#define TRIG3 26
+#define ECHO3 30
+#define TRIG3 32
 
-#define AUDIO 20
+#define AUDIO 18
 
-#define GREEN1 3
-#define RED1 4
-#define BLUE1 5
+#define RED1 3
+#define GREEN1 2
+#define BLUE1 4
 
-#define GREEN2 6
-#define RED2 7 
-#define BLUE2 8
+#define RED2 7
+#define BLUE2 6
+#define GREEN2 5
 
-#define GREEN3 9
-#define RED3 10
-#define BLUE3 11
-
+#define RED3 9
+#define BLUE3 10
+#define GREEN3 8
 
 static int FAR = 0,
            MEDIUM = 1,
@@ -34,11 +28,11 @@ static int FAR = 0,
            STRIP_TWO = 2,
            STRIP_THREE = 3,
            R = 0, G = 1, B = 2,
-           MAX_BRIGHTNESS = 120,
-           MED_BRIGHTNESS = 80,
-           IDLE_BRIGHTNESS = 30,
+           MAX_BRIGHTNESS = 255,
+           MED_BRIGHTNESS = 180,
+           IDLE_BRIGHTNESS = 100,
            FRAME_RATE = 10;
-
+           
 int strip1[3], strip2[3], strip3[3];
 int count = 0;
 long distance1 = 151, distance2 = 151, distance3 = 151;
@@ -94,11 +88,11 @@ void setup() {
 void loop() {
   if (count == 10) {
     // get distances from each ultrasonic sensor
-    distance1 = ultrasonic(TRIG1, ECHO1);
+    //distance1 = ultrasonic(TRIG1, ECHO1);
     distance2 = ultrasonic(TRIG2, ECHO2);
     distance3 = ultrasonic(TRIG3, ECHO3);
-    Serial.print("Strip one distance: ");
-    Serial.println(distance1);
+    //Serial.print("Strip one distance: ");
+    //Serial.println(distance1);
     Serial.print("Strip two distance: ");
     Serial.println(distance2);
     Serial.print("Strip three distance: ");
@@ -203,13 +197,13 @@ void readAudio() {
       analogWrite(GREEN1, i);
       analogWrite(GREEN2, i);
       analogWrite(GREEN3, i);
-      delayMicroseconds(1000);
+      delayMicroseconds(250);
     }
     for (int i = MAX_BRIGHTNESS; i >= 0; i--) {
       analogWrite(GREEN1, i);
       analogWrite(GREEN2, i);
       analogWrite(GREEN3, i);
-      delayMicroseconds(10000);
+      delayMicroseconds(2500);
     } 
     lastInterrupt = millis();
   }

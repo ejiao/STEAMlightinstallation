@@ -1,5 +1,6 @@
 /* May 11, 2017 
- * This is the final code for strips that contain individual 
+ * This is the final code for strips that require a reduced light output 
+ * (Used on LED strips that contain RGB pixels instead of individual 
  * R, G, and B lights
  */
 
@@ -34,9 +35,9 @@ static int FAR = 0,
            STRIP_TWO = 2,
            STRIP_THREE = 3,
            R = 0, G = 1, B = 2,
-           MAX_BRIGHTNESS = 120,
-           MED_BRIGHTNESS = 80,
-           IDLE_BRIGHTNESS = 30,
+           MAX_BRIGHTNESS = 80,
+           MED_BRIGHTNESS = 50,
+           IDLE_BRIGHTNESS = 20,
            FRAME_RATE = 10;
 
 int strip1[3], strip2[3], strip3[3];
@@ -112,10 +113,7 @@ void loop() {
   rgb(strip1, RED1, GREEN1, BLUE1);
   rgb(strip2, RED2, GREEN2, BLUE2);
   rgb(strip3, RED3, GREEN3, BLUE3);
-
-  //  Serial.print("Strip 3 Red: ");
-  //  Serial.println(strip3[R]);
-
+  
   delay(FRAME_RATE);
 
   count++;
@@ -198,7 +196,7 @@ long ultrasonic(int trigPin, int echoPin) {
 
 // does the audio stuff
 void readAudio() {
-  if (millis() - lastInterrupt > 10) {
+  if (millis() - lastInterrupt > 100) {
     for (int i = 0; i < MAX_BRIGHTNESS; i++) {
       analogWrite(GREEN1, i);
       analogWrite(GREEN2, i);

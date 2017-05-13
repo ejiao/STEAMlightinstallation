@@ -3,17 +3,17 @@
 #define ECHO2 34
 #define TRIG2 36
 
-#define RED1 3
-#define BLUE1 4
-#define GREEN1 2
+#define RED1 4
+#define BLUE1 5
+#define GREEN1 3
 
-#define RED2 7
-#define BLUE2 6
-#define GREEN2 5
+#define RED2 8
+#define BLUE2 7
+#define GREEN2 6
 
-#define RED3 9
-#define BLUE3 10
-#define GREEN3 8
+#define RED3 10
+#define BLUE3 11
+#define GREEN3 9
 
 int lastMode1 = 0;
 int lastMode2 = 0;
